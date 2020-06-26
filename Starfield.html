@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Starfield</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            height: 100%;
+            position: fixed;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <canvas>
+    </canvas>
+    <script>
+        const Star = function(x, y, z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.size = 15;
+        };
+        var context = document.querySelector("canvas").getContext("2d");
+
+        var height = document.documentElement.clientHeight;
+        var width = document.documentElement.clientWidth;
+
+        var stars = new Array();
+        var max_depth = 2500;
+
+        for (let index = 0; index < 200; index++) {
+            stars[index] = new Star(Math.random() * width, Math.random() * height, index * (max_depth / 200));
+        }
+        /*context.canvas.height=height;
+        context.canvas.width=width;*/
+
+        /*context.fillStyle="#000000";
+        context.fillRect(0,0,100,100);*/
+
+        /*For reactive canvas*/
+        function loop() {
+            window.requestAnimationFrame(loop);
+
+            height = document.documentElement.clientHeight;
+            width = document.documentElement.clientWidth;
+
+            context.canvas.height = height;
+            context.canvas.width = width;
+
+            context.fillStyle = "#000000";
+            context.fillRect(0, 0, width, height);
+
+            /*Showing Star*/
+            for (let index = stars.length - 1; index > -1; index--) {
+                let star = stars[index];
+                star.z -= 15; //speed
+                /**/
+                if (star.z < 0) {
+                    stars.push(stars.splice(index, 1)[0]); //to stop ovelap eachother
+                    star.z = max_depth
+                    continue;
+                }
+                /*Bringing Star from middle*/
+                let tarnslate_x = width * 0.5;
+                let translate_y = height * 0.5;
+                /*Bringing Star from middle*/
+                /*for star moving*/
+                let field_of_view = (height + width) * 0.5;
+                /*Projection*/
+                let star_x = (star.x - tarnslate_x) / (star.z / field_of_view) + tarnslate_x;
+                let star_y = (star.y - translate_y) / (star.z / field_of_view) + translate_y;
+                /*Projection*/
+                let scale = field_of_view / (field_of_view + star.z);
+                /*for star moving*/
+                /*coloring far away star*/
+                let color = Math.floor(scale * 256);
+                /*coloring far away star*/
+                context.fillStyle = "rgb(" + color + "," + color + "," + color + ")";
+                context.fillRect(star_x, star_y, star.size * scale, star.size * scale);
+            }
+            /*Showing Star*/
+        }
+        /*For reactive canvas*/
+        loop();
+
+    </script>
+</body>
+
+</html>
